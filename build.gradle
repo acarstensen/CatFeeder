@@ -1,0 +1,31 @@
+plugins {
+    id 'groovy'
+    id 'java'
+}
+
+
+group 'com.adamsiot'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.5.2'
+    compile 'com.amazonaws:aws-lambda-java-core:1.2.0'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+}
+
+task buildZip(type: Zip) {
+    from compileGroovy
+    from processResources
+    into('lib') {
+        from configurations.runtime
+    }
+}
+
+build.dependsOn buildZip
