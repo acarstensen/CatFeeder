@@ -82,8 +82,9 @@ class LogProcessor {
             unit = contents.substring(contents.indexOf(' ')+1)
 
             // get rid of bad measurements... there's only 9 inches of space for food and water
-            double dVal = Double.parseDouble(val)
+            Double dVal = Double.parseDouble(val)
             if(dVal > 9){
+                println "Tossing invalid measurement of: ${dVal.toString()}"
                 dVal = 9
             }
             val = dVal.toString()
