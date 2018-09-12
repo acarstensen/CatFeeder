@@ -24,7 +24,7 @@ class LogProcessorSpec extends Specification {
         File logFilesDir = new File("${commonPath}${logType}")
         logFilesDir.listFiles().each { File f ->
             LogEntry logEntry = logProcessor.processLogFile(f)
-            output += logEntry.json
+            output += logEntry.getJson(false)
         }
 
         and:
@@ -55,7 +55,7 @@ class LogProcessorSpec extends Specification {
         assert actualLogEntry.unit == expectedLogEntry.unit
 
         and: "the json is delightful"
-        assert actualLogEntry.json == expectedJson
+        assert actualLogEntry.getJson(false) == expectedJson
 
         where:
         path                                                          | type                 | time                  | val    | unit

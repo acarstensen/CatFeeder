@@ -15,9 +15,10 @@ repositories {
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.5.2'
-    compile 'com.amazonaws:aws-lambda-java-core:1.2.0'
-    compile group: 'commons-io', name: 'commons-io', version: '2.6'
     testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile 'com.amazonaws:aws-lambda-java-core:1.2.0'
+    compile 'com.amazonaws:aws-lambda-java-events:2.2.2'
 }
 
 task buildZip(type: Zip) {
