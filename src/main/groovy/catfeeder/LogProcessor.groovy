@@ -20,12 +20,13 @@ class LogProcessor {
     // https://www.polyglotdeveloper.com/lambda/2017-07-05-Using-Lambda-as-S3-events-processor/#create-lambda-function
     String handleRequest(S3Event newLogEntryS3event, Context context) {
         try {
-            S3Object newLogEntryS3Object = getS3Object(newLogEntryS3event)
+            S3Object newLogEntryS3Object = getNewLogEntryS3Object(newLogEntryS3event)
             LogEntry logEntry = getLogEntry(newLogEntryS3Object)
             S3Object websiteJsonS3Object = getWebsiteJsonS3Object(logEntry)
             File websiteJsonFile = getWebsiteJsonFile(websiteJsonS3Object)
             updateWebsiteJsonFile(websiteJsonFile, logEntry)
             putWebsiteJsonFile(websiteJsonS3Object, websiteJsonFile)
+            deleteNewLogEntryS3Object(websiteJsonS3Object)
             println "Successfully processed!: ${newLogEntryS3Object.bucketName}/${newLogEntryS3Object.key}"
             return "Ok"
         } catch (IOException e) {
@@ -33,8 +34,8 @@ class LogProcessor {
         }
     }
 
-    S3Object getS3Object(S3Event newLogEntryS3event){
-        println "getS3Object..."
+    S3Object getNewLogEntryS3Object(S3Event newLogEntryS3event){
+        println "getNewLogEntryS3Object..."
         // STEP1: Read input event and extract file details which got added to the source bucket
         S3EventNotification.S3EventNotificationRecord record = newLogEntryS3event.getRecords().get(0)
         String srcBucket = record.getS3().getBucket().getName()
@@ -127,5 +128,11 @@ class LogProcessor {
         meta.setContentType(websiteJsonS3Object.getObjectMetadata().getContentType())
         AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient()
         s3Client.putObject(websiteBucket, websiteJsonS3Object.key, websiteJsonFile.newDataInputStream(), null)
+    }
+
+    void deleteNewLogEntryS3Object(S3Object newLogEntryS3Object){
+        println "deleteNewLogEntryS3Object..."
+        AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient()
+        s3Client.deleteObject(newLogEntryS3Object.bucketName, newLogEntryS3Object.key)
     }
 }
