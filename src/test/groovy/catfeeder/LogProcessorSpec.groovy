@@ -14,31 +14,6 @@ import java.time.LocalDateTime
 class LogProcessorSpec extends Specification {
     @Shared String commonPath = 'src/test/resources/catfeeder/logs/'
 
-    def 'process local log files'(){
-        given: "a new output file"
-        File outputFile = new File("build/tmp/${logType}.json")
-        String output = "["
-
-        when: "you process all of the files"
-        LogProcessor logProcessor = new LogProcessor()
-        File logFilesDir = new File("${commonPath}${logType}")
-        logFilesDir.listFiles().each { File f ->
-            LogEntry logEntry = logProcessor.processLogFile(f)
-            output += logEntry.getJson(false)
-        }
-
-        and:
-        output = output.substring(0, output.lastIndexOf(','))
-        output += "\n]"
-        FileUtils.write(outputFile, output, StandardCharsets.UTF_8)
-
-        then:
-        1==1
-
-        where:
-        logType << ['measureFood','measureWater','outputFood','switchServoControl']
-    }
-
     def 'test #type file'(){
         given: "a measureFood file"
         File f = new File("${commonPath}${path}")
@@ -58,11 +33,11 @@ class LogProcessorSpec extends Specification {
         assert actualLogEntry.getJson(false) == expectedJson
 
         where:
-        path                                                          | type                 | time                  | val    | unit
-        'measureFood/measureFood_2018-04-21_090016.log'               | 'measureFood'        | '2018-04-21T09:00:16' | '3.91' | 'inches'
-        'measureWater/measureWater_2018-04-21_230001.log'             | 'measureWater'       | '2018-04-21T23:00:01' | '7.65' | 'inches'
-        'outputFood/outputFood_2018-05-13_040003.log'                 | 'outputFood'         | '2018-05-13T04:00:03' | '0.7'  | 'spinDuration'
-        'switchServoControl/switchServoControl_2018-04-28_074553.log' | 'switchServoControl' | '2018-04-28T07:45:53' | '0.3'  | 'spinDuration'
+        path                                       | type                 | time                  | val    | unit
+        'measureFood_2018-04-21_090016.log'        | 'measureFood'        | '2018-04-21T09:00:16' | '3.91' | 'inches'
+        'measureWater_2018-04-21_230001.log'       | 'measureWater'       | '2018-04-21T23:00:01' | '7.65' | 'inches'
+        'outputFood_2018-05-13_040003.log'         | 'outputFood'         | '2018-05-13T04:00:03' | '0.7'  | 'spinDuration'
+        'switchServoControl_2018-04-28_074553.log' | 'switchServoControl' | '2018-04-28T07:45:53' | '0.3'  | 'spinDuration'
 
         expectedJson << [
             "[1524301216000,3.91],\n", // measureFood
