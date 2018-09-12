@@ -26,7 +26,7 @@ class LogProcessor {
             File websiteJsonFile = getWebsiteJsonFile(websiteJsonS3Object)
             updateWebsiteJsonFile(websiteJsonFile, logEntry)
             putWebsiteJsonFile(websiteJsonS3Object, websiteJsonFile)
-            deleteNewLogEntryS3Object(websiteJsonS3Object)
+            deleteNewLogEntryS3Object(newLogEntryS3Object)
             println "Successfully processed!: ${newLogEntryS3Object.bucketName}/${newLogEntryS3Object.key}"
             return "Ok"
         } catch (IOException e) {
