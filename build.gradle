@@ -19,6 +19,7 @@ dependencies {
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile 'com.amazonaws:aws-lambda-java-core:1.2.0'
     compile 'com.amazonaws:aws-lambda-java-events:2.2.2'
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.405'
 }
 
 task buildZip(type: Zip) {

@@ -18,24 +18,25 @@ class LogProcessor {
     static final String websiteBucket = "catfeeder-website"
 
     // https://www.polyglotdeveloper.com/lambda/2017-07-05-Using-Lambda-as-S3-events-processor/#create-lambda-function
-    String handleRequest(S3Event s3event, Context context) {
+    String handleRequest(S3Event newLogEntryS3event, Context context) {
         try {
-            S3Object s3Object = getS3Object(s3event)
-            LogEntry logEntry = getLogEntry(s3Object)
-            File websiteJsonFile = getWebsiteJsonFile(logEntry)
+            S3Object newLogEntryS3Object = getS3Object(newLogEntryS3event)
+            LogEntry logEntry = getLogEntry(newLogEntryS3Object)
+            S3Object websiteJsonS3Object = getWebsiteJsonS3Object(logEntry)
+            File websiteJsonFile = getWebsiteJsonFile(websiteJsonS3Object)
             updateWebsiteJsonFile(websiteJsonFile, logEntry)
-            putWebsiteJsonFile(s3Object, websiteJsonFile)
-            println "Successfully processed!: ${s3Object.bucketName}/${s3Object.key}"
+            putWebsiteJsonFile(websiteJsonS3Object, websiteJsonFile)
+            println "Successfully processed!: ${newLogEntryS3Object.bucketName}/${newLogEntryS3Object.key}"
             return "Ok"
         } catch (IOException e) {
             throw new RuntimeException(e)
         }
     }
 
-    S3Object getS3Object(S3Event s3event){
+    S3Object getS3Object(S3Event newLogEntryS3event){
         println "getS3Object..."
         // STEP1: Read input event and extract file details which got added to the source bucket
-        S3EventNotification.S3EventNotificationRecord record = s3event.getRecords().get(0)
+        S3EventNotification.S3EventNotificationRecord record = newLogEntryS3event.getRecords().get(0)
         String srcBucket = record.getS3().getBucket().getName()
         // Remove any spaces or unicode non-ASCII characters.
         String srcKey = record.getS3().getObject().getKey().replace('+', ' ')
@@ -50,12 +51,12 @@ class LogProcessor {
         s3Client.getObject(new GetObjectRequest(srcBucket, srcKey))
     }
 
-    LogEntry getLogEntry(S3Object s3Object){
+    LogEntry getLogEntry(S3Object newLogEntryS3Object){
         println "getLogEntry..."
         //write to tmp: https://forums.aws.amazon.com/thread.jspa?threadID=174119
-        File tempLogEntryFile = new File("/tmp/${s3Object.key}")
+        File tempLogEntryFile = new File("/tmp/${newLogEntryS3Object.key}")
         println "tempLogEntryFile: ${tempLogEntryFile}"
-        FileUtils.write(tempLogEntryFile, s3Object.getObjectContent().text, StandardCharsets.UTF_8)
+        FileUtils.write(tempLogEntryFile, newLogEntryS3Object.getObjectContent().text, StandardCharsets.UTF_8)
         processLogFile(tempLogEntryFile)
     }
 
@@ -92,17 +93,21 @@ class LogProcessor {
         logEntry
     }
 
-    File getWebsiteJsonFile(LogEntry logEntry){
-        println "getWebsiteJsonFile..."
+    S3Object getWebsiteJsonS3Object(LogEntry logEntry){
+        println "getWebsiteJsonS3Object..."
         String websiteJsonFileName = "${logEntry.type}.json"
         println "websiteJsonFileName: ${websiteJsonFileName}"
         AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient()
         S3Object s3Object = s3Client.getObject(new GetObjectRequest(websiteBucket, websiteJsonFileName))
+        s3Object
+    }
 
+    File getWebsiteJsonFile(S3Object newLogEntryS3Object){
+        println "getWebsiteJsonFile..."
         //write to tmp: https://forums.aws.amazon.com/thread.jspa?threadID=174119
-        File websiteJsonFile = new File("/tmp/${s3Object.key}")
+        File websiteJsonFile = new File("/tmp/${newLogEntryS3Object.key}")
         println "websiteJsonFile: ${websiteJsonFile}"
-        FileUtils.write(websiteJsonFile, s3Object.getObjectContent().text, StandardCharsets.UTF_8)
+        FileUtils.write(websiteJsonFile, newLogEntryS3Object.getObjectContent().text, StandardCharsets.UTF_8)
         websiteJsonFile
     }
 
@@ -113,14 +118,14 @@ class LogProcessor {
         FileUtils.write(websiteJsonFile, contents, StandardCharsets.UTF_8)
     }
 
-    void putWebsiteJsonFile(S3Object s3Object, File websiteJsonFile){
+    void putWebsiteJsonFile(S3Object websiteJsonS3Object, File websiteJsonFile){
         println "putWebsiteJsonFile..."
         //NOTE: Concurrency is set to 1 in the lambda function settings so you should be able to overwrite the file without worry
         // STEP4: Uploading to S3 target bucket
-        println "Writing to: ${websiteBucket}/${s3Object.key}"
+        println "Writing to: ${websiteBucket}/${websiteJsonS3Object.key}"
         ObjectMetadata meta = new ObjectMetadata()
-        meta.setContentType(s3Object.getObjectMetadata().getContentType())
+        meta.setContentType(websiteJsonS3Object.getObjectMetadata().getContentType())
         AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient()
-        s3Client.putObject(websiteBucket, s3Object.key, websiteJsonFile.newDataInputStream(), null)
+        s3Client.putObject(websiteBucket, websiteJsonS3Object.key, websiteJsonFile.newDataInputStream(), null)
     }
 }

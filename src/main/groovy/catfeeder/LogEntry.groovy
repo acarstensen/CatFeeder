@@ -13,15 +13,15 @@ class LogEntry {
         String json
         String timeMilli = time.toInstant(ZoneOffset.UTC).toEpochMilli()
         if(type.startsWith('measure')){
-            json = "\n[${timeMilli},${val}]"
+            json = "[${timeMilli},${val}]"
         } else if(type.contains('Food')) {
-            json = "\n{\n" +
+            json = "{\n" +
                     "    \"x\": ${timeMilli},\n" +
                     "    \"title\": \"M\",\n" +
                     "    \"text\": \"Meal\"\n" +
                     "}"
         } else if(type.contains('switch')) {
-            json = "\n{\n" +
+            json = "{\n" +
                     "    \"x\": ${timeMilli},\n" +
                     "    \"title\": \"S\",\n" +
                     "    \"text\": \"Snack\"\n" +
@@ -29,9 +29,9 @@ class LogEntry {
         }
 
         if(prePendComma){
-            json = ",${json}"
+            json = ",\n${json}"
         } else {
-            json = "${json},"
+            json = "${json},\n"
         }
 
         json

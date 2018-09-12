@@ -65,18 +65,18 @@ class LogProcessorSpec extends Specification {
         'switchServoControl/switchServoControl_2018-04-28_074553.log' | 'switchServoControl' | '2018-04-28T07:45:53' | '0.3'  | 'spinDuration'
 
         expectedJson << [
-            "\n[1524301216000,3.91],", // measureFood
-            "\n[1524351601000,7.65],", // measureWater
-            "\n{\n" +
+            "[1524301216000,3.91],\n", // measureFood
+            "[1524351601000,7.65],\n", // measureWater
+            "{\n" +
             "    \"x\": 1526184003000,\n" +
             "    \"title\": \"M\",\n" +
             "    \"text\": \"Meal\"\n" +
-            "},", // outputFood
-            "\n{\n" +
+            "},\n", // outputFood
+            "{\n" +
             "    \"x\": 1524901553000,\n" +
             "    \"title\": \"S\",\n" +
             "    \"text\": \"Snack\"\n" +
-            "},", // switchServoControl
+            "},\n", // switchServoControl
             ]
     }
 }
