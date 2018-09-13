@@ -87,6 +87,22 @@ class LogProcessor {
                 println "Tossing invalid measurement of: ${dVal.toString()}"
                 dVal = 9
             }
+
+            // determine if we should alert to logs (cloud watch will monitor for this and do emails)
+            String alertType = 'Water'
+            Double minVal = Double.parseDouble(System.getenv('WATER_ALERT_MIN_VAL') ?: '1.1')
+            Double maxVal = Double.parseDouble(System.getenv('WATER_ALERT_MAX_VAL') ?: '9')
+            if(type.toLowerCase().contains('food')){
+                alertType = 'Food'
+                minVal = Double.parseDouble(System.getenv('FOOD_ALERT_MIN_VAL') ?: '1.6')
+                maxVal = Double.parseDouble(System.getenv('FOOD_ALERT_MAX_VAL') ?: '9')
+            }
+
+            if(dVal > minVal && dVal < maxVal){
+                println "${alertType} level is too low! Measurement value: ${dVal.toString()} " +
+                        "minVal: ${minVal} maxVal: ${maxVal}"
+            }
+
             val = dVal.toString()
         }
 
