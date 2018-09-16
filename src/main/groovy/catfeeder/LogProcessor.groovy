@@ -92,7 +92,7 @@ class LogProcessor {
                 maxVal = Double.parseDouble(System.getenv('FOOD_ALERT_MAX_VAL') ?: '9')
             }
 
-            if(dVal > minVal && dVal < maxVal){
+            if(dVal >= minVal && dVal <= maxVal){
                 println "${alertType} level is too low! Measurement value: ${dVal.toString()} " +
                         "minVal: ${minVal} maxVal: ${maxVal}"
             }
