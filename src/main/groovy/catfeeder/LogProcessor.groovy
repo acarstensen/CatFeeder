@@ -79,14 +79,8 @@ class LogProcessor {
         } else {
             // a measure entry
             val = contents.substring(0, contents.indexOf(' '))
-            unit = contents.substring(contents.indexOf(' ')+1)
-
-            // get rid of bad measurements... there's only 9 inches of space for food and water
             Double dVal = Double.parseDouble(val)
-            if(dVal > 9){
-                println "Tossing invalid measurement of: ${dVal.toString()}"
-                dVal = 9
-            }
+            unit = contents.substring(contents.indexOf(' ')+1)
 
             // determine if we should alert to logs (cloud watch will monitor for this and do emails)
             String alertType = 'Water'
