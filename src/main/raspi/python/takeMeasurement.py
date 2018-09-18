@@ -22,9 +22,9 @@ if foodOrWater == "Water":
   maxValidDistance = 7.9
 print "Using maxValidDistance: " + str(maxValidDistance)
 
-# take 20 measurements so you can calculate a nice average
+# try and find 10 valid measurements so you can calculate a nice average
 readings = []
-for i in range(0, 20):
+for i in range(0, 1000):
     # send a quick sound wave
     GPIO.output(TRIG, True)
     time.sleep(0.00001)
@@ -48,18 +48,21 @@ for i in range(0, 20):
     print "Amount of " + foodOrWater + " remaining: " + str(amountRemaining) + " inches"
 
     # append to list
-    readings.append(amountRemaining)
+    if amountRemaining >= 0 and amountRemaining <= maxValidDistance:
+      readings.append(amountRemaining)
+
+    # exit loop if we have 10 valid readings
+    if len(readings) == 10:
+      break
 
 # sort the list
 print "unsorted: " + str(readings)
 readings.sort()
 print "sorted: " + str(readings)
 
-# remove the first and last 3 to get rid of outliers
-del readings[19]
-del readings[18]
-del readings[17]
-del readings[0]
+# remove the first and last to get rid of outliers
+del readings[9]
+del readings[8]
 del readings[0]
 del readings[0]
 print "after removal: " + str(readings)
