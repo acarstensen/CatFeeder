@@ -19,7 +19,7 @@ GPIO.setup(ECHO,GPIO.IN)
 # figure out max valid reading
 maxValidDistance = 9.0
 if foodOrWater == "Water":
-  maxValidDistance = 7.9
+    maxValidDistance = 7.9
 print "Using maxValidDistance: " + str(maxValidDistance)
 
 # try and find 10 valid measurements so you can calculate a nice average
@@ -32,7 +32,7 @@ for i in range(0, 1000):
 
     # measure the time it takes to bounce
     while GPIO.input(ECHO)==0:
-      pulse_start = time.time()
+        pulse_start = time.time()
 
     while GPIO.input(ECHO)==1:
       pulse_end = time.time()
@@ -49,32 +49,37 @@ for i in range(0, 1000):
 
     # append to list
     if amountRemaining >= 0 and amountRemaining <= maxValidDistance:
-      readings.append(amountRemaining)
+        readings.append(amountRemaining)
 
     # exit loop if we have 10 valid readings
     if len(readings) == 10:
-      break
+        break
 
-# sort the list
-print "unsorted: " + str(readings)
-readings.sort()
-print "sorted: " + str(readings)
+if len(readings) == 10:
+    # sort the list
+    print "unsorted: " + str(readings)
+    readings.sort()
+    print "sorted: " + str(readings)
 
-# remove the first and last to get rid of outliers
-del readings[9]
-del readings[8]
-del readings[0]
-del readings[0]
-print "after removal: " + str(readings)
+    # remove the first and last to get rid of outliers
+    del readings[-1]
+    del readings[-1]
+    del readings[0]
+    del readings[0]
+    print "after removal: " + str(readings)
 
-# calculate average
-avgAmountRemaining = float(sum(readings)) / max(len(readings), 1)
-print "Average amount of " + foodOrWater + " remaining: " + str(avgAmountRemaining) + " inches"
+    # calculate average
+    avgAmountRemaining = float(sum(readings)) / max(len(readings), 1)
+    print "Average amount of " + foodOrWater + " remaining: " + str(avgAmountRemaining) + " inches"
 
-# if less than 0, 0
-if avgAmountRemaining < 0:
-  avgAmountRemaining = 0
-  print "Rounding up negative number to 0."
+    # if less than 0, 0
+    if avgAmountRemaining < 0:
+        avgAmountRemaining = 0
+        print "Rounding up negative number to 0."
+else:
+    print "We didn't get 10 readings!?: " + str(readings)
+    print "Setting reading to -1"
+    avgAmountRemaining = -1
 
 # print to log file
 timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H%M%S')
