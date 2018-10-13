@@ -24,7 +24,7 @@ print "Using maxValidDistance: " + str(maxValidDistance)
 
 # try and find 10 valid measurements so you can calculate a nice average
 readings = []
-for i in range(0, 1000):
+for i in range(0, 100):
     # send a quick sound wave
     GPIO.output(TRIG, True)
     time.sleep(0.00001)
