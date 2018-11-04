@@ -35,7 +35,7 @@ for i in range(0, 100):
         pulse_start = time.time()
 
     while GPIO.input(ECHO)==1:
-      pulse_end = time.time()
+        pulse_end = time.time()
 
     # calculate distance
     pulse_duration = pulse_end - pulse_start
