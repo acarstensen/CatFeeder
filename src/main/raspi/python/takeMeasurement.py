@@ -17,7 +17,7 @@ GPIO.setup(TRIG,GPIO.OUT)
 GPIO.setup(ECHO,GPIO.IN)
 
 # figure out max valid reading
-maxValidDistance = 12.1
+maxValidDistance = 11.1
 if foodOrWater == "Water":
     maxValidDistance = 8.05
 print "Using maxValidDistance: " + str(maxValidDistance)
